@@ -15,7 +15,8 @@ class MainGUI:
 		self.df = None
 		self.root.filename = ""
 		self.dataFrames = []
-		self.dataProcessing = -1
+		self.dataProcessing = 999
+		self.algorithm = 999
 
 		Label(self.root, text = "File:").place(x = 10,y = 100)
 		self.filename_Entry = tk.Entry(self.root, width=24)
@@ -27,7 +28,7 @@ class MainGUI:
 		self.imgLogo = ImageTk.PhotoImage(Image.open("./Data/logo.jpg").resize((209, 50), Image.BICUBIC))
 		self.logo = Label(self.root, image = self.imgLogo).place(x=60,y=10)
 
-		self.console = tk.Text(self.root, height=9, width=43, font=("Monaco", 11), background='black', foreground='white', wrap='none', highlightthickness=0)
+		self.console = tk.Text(self.root, height=9, width=43, font=("Monaco", 11), background='black', foreground='white', highlightthickness=0)
 		self.console.insert(END, "Welcome to ML - Model Training")
 		self.console.bind("<Key>", self.disableWriting)
 		self.console.pack(side=BOTTOM, padx=10, pady=10)
@@ -76,13 +77,37 @@ class MainGUI:
 				self.logConsole("Rows in module "+str(x+1)+" : "+str(self.dataFrames[x].shape[0]))
 			
 
-			d = MyDialog(self.root, self)
-			self.root.wait_window(d.top)
-			print(self.dataProcessing)
+			optionsDataProcessing = ["Use all data available", "Use 1 data/sec", "Use a dynamic window of data"]
+			optionsAlgorithm = ["Random Forest", "Neural Network", "Convolutional Neural Network"]
+
+			d_DP = optionDialog(self.root, "What kind of data processing should I use?", optionsDataProcessing)
+			self.root.wait_window(d_DP.top)
+			self.dataProcessing = d_DP.getValue()
+
+			d_ML = optionDialog(self.root, "Select a Machine Learning algorithm", optionsAlgorithm)
+			self.root.wait_window(d_ML.top)
+			self.algorithm = d_ML.getValue()
+
+			if self.algorithm == 0:
+				pass#Random Forest config
+			elif self.algorithm == 1:
+				pass#Neural Network config
+			elif self.algorithm == 2:
+				pass#Convolutional Neural Network config
+			else:
+				raise Exception("Internal Error")
+
+			self.logConsole("Data processing: " + optionsDataProcessing[self.dataProcessing])
+			self.logConsole("Algorithm: " + optionsAlgorithm[self.algorithm])
+
+
+			self.logConsole("TRAINING...")
+			trainModel(self.dataFrames, self.dataProcessing, self.algorithm, {})
+			self.logConsole("Training completed successfully!")
 
 
 		except Exception as e:
-			self.logConsole("Critical ERROR in file structure")
+			self.logConsole("Critical ERROR in data")
 			raise e
 
 	def askMLConfig(self, msg):
@@ -106,24 +131,18 @@ class MainGUI:
 		positionDown = int(win.winfo_screenheight()/2 - windowHeight/2)
 		win.geometry("+{}+{}".format(positionRight, positionDown))
 
-class MyDialog:
+class optionDialog:
 
-	def __init__(self, parent, parentOb):
+	def __init__(self, parent, text, options):
 
 		top = self.top = Toplevel(parent)
-		self.parent = parentOb
 
-		Label(top, text="What kind of data processing should I use?").pack(pady=15)
-
+		Label(top, text=text).pack(pady=15)
 
 		self.v = tk.IntVar()
 		self.v.set(0)
-		options = ["Use all data available", "Use 1 data/sec", "Use a dynamic window of data"]
 		for val, option in enumerate(options):
 			tk.Radiobutton(top, text=option, indicatoron = 0, width = 20, padx = 20, variable=self.v, value=val, selectcolor='gray25').pack()
-
-
-
 
 		b = Button(top, text="Continue", command=self.ok, width=10)
 		b.pack(pady=15, side=BOTTOM)
@@ -133,13 +152,17 @@ class MyDialog:
 		self.center(self.top, windowWidth=310, windowHeight=195)
 
 	def ok(self):
-
-		self.parent.dataProcessing = self.v.get()
 		self.top.destroy()
+
+	def getValue(self):
+		return self.v.get()
 
 	def center(self, win, windowWidth, windowHeight):
 		positionRight = int(win.winfo_screenwidth()/2 - windowWidth/2)
 		positionDown = int(win.winfo_screenheight()/2 - windowHeight/2)
 		win.geometry("+{}+{}".format(positionRight, positionDown))
+
+def trainModel(pDataFrames, pDataProcessing, pAlgorithm, configuration):
+	pass
 		
 mainGUI = MainGUI()
