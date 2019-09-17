@@ -24,10 +24,10 @@ if __name__ == '__main__':
 
 	Label(root, text = "File:").place(x = 10,y = 100)
 	Entry(root, state='disabled', width=24).place(x = 60,y = 100)
-	imgSeach = ImageTk.PhotoImage(Image.open("./Data/search.png").resize((20, 20), Image.ANTIALIAS))
+	imgSeach = ImageTk.PhotoImage(Image.open("./Data/search.png").resize((20, 20), Image.BICUBIC))
 	Button(root, command = openFileChooser, image = imgSeach).place(x = 290, y = 102)
 
-	imgLogo = ImageTk.PhotoImage(Image.open("./Data/logo.jpg").resize((209, 50), Image.ANTIALIAS))
+	imgLogo = ImageTk.PhotoImage(Image.open("./Data/logo.jpg").resize((209, 50), Image.BICUBIC))
 	logo = Label(root, image = imgLogo).place(x=60,y=10)
 
 	console = tk.Text(root, height=9, width=43, font=("Monaco", 11), background='black', foreground='white', wrap='none')
