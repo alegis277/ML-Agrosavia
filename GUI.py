@@ -12,6 +12,8 @@ from Resources.reportGeneration import report
 from Resources.Dialogs import *
 import platform
 import logging
+from datetime import datetime
+import os
 logging.basicConfig(filename='log.log', format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S', level=logging.INFO)
 logging.info("Machine Learning - Model Training started")
 
@@ -137,15 +139,16 @@ class MainGUI:
 				return
 
 			#Configuration windows
-			if self.algorithm == 0:
+			if self.algorithm == 0: #Random Forest config
 				RF_config = randomForestConfigDialog(self.root, len(self.dataFrames))
 				self.root.wait_window(RF_config.top)
 				self.configuration = RF_config.getConfiguration()
-			elif self.algorithm == 1:
-				pass#Neural Network config
-				self.configuration = {}
-			elif self.algorithm == 2:
-				self.logConsole(self.optionsAlgorithm[self.algorithm]+" not implemented", error = True) #Convolutional Neural Network config
+			elif self.algorithm == 1: #Neural Network config
+				NN_config = neuralNetworkConfigDialog(self.root, len(self.dataFrames))
+				self.root.wait_window(NN_config.top)
+				self.configuration = NN_config.getConfiguration()
+			elif self.algorithm == 2: #Convolutional Neural Network config
+				self.logConsole(self.optionsAlgorithm[self.algorithm]+" not implemented", error = True)
 				self.configuration = {}
 				self.processButton.config(state=NORMAL)
 				self.imgSearchButton.config(state=NORMAL)
@@ -164,7 +167,11 @@ class MainGUI:
 			self.logConsole("Algorithm: " + self.optionsAlgorithm[self.algorithm])
 
 			for key, value in self.configuration.items():
-				self.logConsole( key+": "+str(value).strip("[").strip("]") )
+				if key == "Layers":
+					for keyL, valueL in value.items():
+						self.logConsole( keyL+" -> Neurons: "+str(valueL[0]+"  Act. Fn: "+valueL[1]))
+				else:
+					self.logConsole( key+": "+str(value).strip("[").strip("]") )
 
 			self.logConsole("TRAINING...")
 			self.root.update()
@@ -202,8 +209,27 @@ class MainGUI:
 
 
 def plotAndAnalysis(GUI):
-	time.sleep(2)
+
+	directory = "Results/"+datetime.now().strftime("%m-%d-%Y, %H %M %S") + " - "+GUI.optionsAlgorithm[GUI.algorithm]
+	os.mkdir(directory)
+
 	reportObj = report()
-	return "/model"
+	reportObj.datetime = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+	reportObj.platform = platform.platform()
+	reportObj.filename = GUI.root.filename
+	reportObj.modulesDetected = len(GUI.dataFrames)
+
+	reportObj.rowsDetected = []
+	for dfDetecter in GUI.dataFrames:
+		reportObj.rowsDetected.append(dfDetecter.shape[0])
+
+	reportObj.dataProcessing = GUI.optionsDataProcessing[GUI.dataProcessing]
+	reportObj.algorithm = GUI.optionsAlgorithm[GUI.algorithm]
+	reportObj.configuration = GUI.configuration
+
+	reportObj.export(directory, "report.txt")
+	return directory
 		
 mainGUI = MainGUI()
+
+
