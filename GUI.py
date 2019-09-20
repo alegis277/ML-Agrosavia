@@ -17,6 +17,12 @@ import os
 logging.basicConfig(filename='log.log', format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S', level=logging.INFO)
 logging.info("Machine Learning - Model Training started")
 
+minTkVersion = 8.6
+
+if tk.TkVersion < minTkVersion:
+	logging.warning("UPDATE YOUR PYTHON VERSION (DEPRECATED TK VERSION), GUI MAY NOT WORK AS EXPECTED")
+	print("UPDATE YOUR PYTHON VERSION (DEPRECATED TK VERSION), GUI MAY NOT WORK AS EXPECTED")
+
 class MainGUI:
 
 	def __init__(self):
@@ -24,7 +30,7 @@ class MainGUI:
 		self.root = tk.Tk()
 		self.root.configure(background='white')
 		self.root.title("Machine Learning - Model Training")
-		self.img_icon = PhotoImage(file='./Resources/icon.png')
+		self.img_icon = ImageTk.PhotoImage(Image.open('./Resources/icon.png'))
 		self.root.tk.call('wm', "iconphoto", self.root._w, self.img_icon)
 		self.df = None
 		self.root.filename = ""

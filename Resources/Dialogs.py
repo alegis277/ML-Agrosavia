@@ -17,7 +17,7 @@ class optionDialog:
 		top = self.top = Toplevel(parent)
 		self.top.title("Select option")
 		self.top.resizable(False, False)
-		self.img_icon = PhotoImage(file='./Resources/icon.png')
+		self.img_icon = ImageTk.PhotoImage(Image.open('./Resources/icon.png'))
 		self.top.tk.call('wm', "iconphoto", self.top._w, self.img_icon)
 		self.selectedOk = False
 
@@ -56,7 +56,7 @@ class randomForestConfigDialog:
 		top = self.top = Toplevel(parent)
 		self.top.title("Random Forest configuration")
 		self.top.resizable(False, False)
-		self.img_icon = PhotoImage(file='./Resources/icon.png')
+		self.img_icon = ImageTk.PhotoImage(Image.open('./Resources/icon.png'))
 		self.top.tk.call('wm', "iconphoto", self.top._w, self.img_icon)
 		self.selectedOk = False
 		self.hyperparameters = 999
@@ -160,7 +160,7 @@ class neuralNetworkConfigDialog:
 		top = self.top = Toplevel(parent)
 		self.top.title("Neural Network configuration")
 		self.top.resizable(False, False)
-		self.img_icon = PhotoImage(file='./Resources/icon.png')
+		self.img_icon = ImageTk.PhotoImage(Image.open('./Resources/icon.png'))
 		self.top.tk.call('wm', "iconphoto", self.top._w, self.img_icon)
 		self.selectedOk = False
 		self.moduleList = []
