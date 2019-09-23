@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 #import matplotlib.pyplot as plt
 #import seaborn as sns
-
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -43,6 +42,7 @@ def trainModel(pDataFrames, pDataProcessing, pAlgorithm, configuration):
 	print("Start: Training Model")
 	print("--------------------------------------------------------")
 	#print("pDataFrames",pDataFrames)
+	resultsToReport = { }
 
 	activeModules = configuration['Active Module IDs']
 	#print("activeModules",activeModules)
@@ -68,36 +68,30 @@ def trainModel(pDataFrames, pDataProcessing, pAlgorithm, configuration):
 	Y = convertLabelsToNumbers(Y)
 	print("Data is ready")
 	print("--------------------------------------------------------")
-###
-###
-###
-### to do:
-###aqui ya se puede hacer la gráfica de feauture vs feature
-###
-###
-###
+	resultsToReport['X'] = X
+	resultsToReport['Y'] = Y
+
 
 	##########################################
 	### functions pAlgorithm
 	##########################################
-	model = ""
 	if pAlgorithm == 0:
 		#### Random Forest"
-		model = algorithmRandomForest(configuration, X, Y)
+		resultsToReport = algorithmRandomForest(configuration, X, Y, resultsToReport)
 	elif pAlgorithm ==1:
 		#### "Neural Network"
-		model = algorithNeuralNetwork(configuration, X, Y)
+		resultsToReport = algorithNeuralNetwork(configuration, X, Y,resultsToReport)
 		
 	elif pAlgorithm ==2:
 		#### "Convolutional Neural Network"
-		model = algorithConvolutionNeuralNetwork(configuration, X, Y)
+		resultsToReport = algorithConvolutionNeuralNetwork(configuration, X, Y,resultsToReport)
 		
-
+	
 	
 	print("--------------------------------------------------------")
 	print("Model Training finished successful ")
 	print("--------------------------------------------------------")
-	print("model", model)
+	print("resultsToReport", resultsToReport)
 
 	return []
 
@@ -216,7 +210,8 @@ def dynamicWindow(pDataFrames, activeModules):
 ####################################################################################
 ### functions pAlgorithm
 ####################################################################################
-def algorithmRandomForest(configuration, X, Y):
+def algorithmRandomForest(configuration, X, Y, resultsToReport):
+	resultsToReport['configuration']=configuration
 	# Random Forest:
 	#configuration {'% Train': '70', '# of Trainings': '3', 'Hyperparameter optimization': True}
 	#'Hyperparameter optimization': False, 'N-estimators': '0', 'Max features': '0', 'Min samples leaf': '0'}
@@ -270,13 +265,6 @@ def algorithmRandomForest(configuration, X, Y):
 			X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=percentageTest, random_state=0)
 			print('There are', X_train.shape[0], 'training data and',  X_test.shape[0], 'testing data.')
 			print(np.vstack((np.unique(Y_train), np.bincount(Y_train))).T)
-#####
-##### to do:
-#####primera grafica a guardar		
-		#sns.countplot(Y_train)
-		#plt.show()
-#####
-#####
 
 			### training random forest . . . with the input parameters
 			print("training random forest . . .")
@@ -293,21 +281,6 @@ def algorithmRandomForest(configuration, X, Y):
 			importanciaVars=model_rf.feature_importances_
 			print(np.around(importanciaVars, decimals=3))
 
-#####
-##### to do:
-			# # Graficar con barras la importancia de cada variable
-			# pos=[1, 2, 3, 4, 5, 6]
-			# plt.rcdefaults()
-			# fig, ax = plt.subplots()
-			# ax.barh(pos, importanciaVars, align='center',color='blue')
-			# ax.set_yticks(pos)
-			# ax.set_yticklabels(feat_labels)
-			# ax.invert_yaxis()  # labels read top-to-bottom
-			# ax.set_xlabel('Importancia Variables')
-			# #plt.show()
-#####
-#####
-
 			# Validation data prediction
 			print("""
 				Validation data prediction...""")
@@ -322,8 +295,18 @@ def algorithmRandomForest(configuration, X, Y):
 			tabla=pd.crosstab(Y_test.ravel(), y_pred, rownames=['Actual LOS'], colnames=['Predicted LOS'])
 			print(tabla*100/len(y_pred))
 
+			resultsToReport['X_train']=X_train
+			resultsToReport['X_test']=X_test
+			resultsToReport['Y_train']=Y_train
+			resultsToReport['Y_test']=Y_test
+			resultsToReport['y_pred']=y_pred
+			resultsToReport['importanciaVars']=np.around(importanciaVars, decimals=3)
+			resultsToReport['precision'] = precision
+			resultsToReport['Condusionmatrix'] = tabla*100/len(y_pred)
+
 	model = "aun no"
-	return model
+	resultsToReport['model'] = model
+	return resultsToReport
 
 def algorithNeuralNetwork(configuration, dataX, dataY):
 	# neural network
@@ -340,11 +323,13 @@ def algorithNeuralNetwork(configuration, dataX, dataY):
 		print("function", functionActivationi )
 
 	model = "aun no"
-	return model
+	resultsToReport['model'] = model
+	return resultsToReport
 
 def algorithConvolutionNeuralNetwork(configuration, dataX, dataY):
 	print("pAlgorithm 2: Convolutional Neural Network ")
 	print("configuration", configuration)
 	model = "aun no"
-	return model
+	resultsToReport['model'] = model
+	return resultsToReport
 
