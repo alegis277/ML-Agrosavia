@@ -215,6 +215,7 @@ class MainGUI:
 
 
 def plotAndAnalysis(GUI):
+	resultsToReport = GUI.model
 
 	directory = "Results/"+datetime.now().strftime("%m-%d-%Y, %H %M %S") + " - "+GUI.optionsAlgorithm[GUI.algorithm]
 	os.mkdir(directory)

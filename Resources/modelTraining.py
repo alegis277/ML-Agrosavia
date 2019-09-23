@@ -94,7 +94,7 @@ def trainModel(pDataFrames, pDataProcessing, pAlgorithm, configuration):
 	print("resultsToReport", resultsToReport)
 	print("resultsToReport len", len(resultsToReport))
 
-	return []
+	return resultsToReport
 
 ####################################################################################
 ### label string to number
