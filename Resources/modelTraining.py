@@ -222,6 +222,7 @@ def algorithmRandomForest(configuration, X, Y, resultsToReport):
 	print("percentageTrain", percentageTrain, "  nTrainings", nTrainings, "percentageTest", percentageTest)
 	optimization=configuration['Hyperparameter optimization']
 
+
 	if optimization == True:
 		## optimization search the best hiperparameter for the data.
 		print("looking for parameters . . .")
@@ -245,8 +246,9 @@ def algorithmRandomForest(configuration, X, Y, resultsToReport):
 						y_pred = model_rf.predict(X_test)
 						precision=accuracy_score(Y_test, y_pred)
 						funcionObjetivo = 10000*precision-nArboles-n_max_features-n_min_samples_leaf
-						resultadosAllCasesOpti = resultadosAllCasesOpti + [funcionObjetivo, nArboles,n_max_features,n_min_samples_leaf,"%.4f" %precision]
-				print(".")
+						resultadosAllCasesOpti = resultadosAllCasesOpti + [[funcionObjetivo, nArboles,n_max_features,n_min_samples_leaf,precision]]
+					print(".")
+				print("..")
 
 			#print("resultadosAllCasesOpti ")
 			#print(resultadosAllCasesOpti )
@@ -256,11 +258,14 @@ def algorithmRandomForest(configuration, X, Y, resultsToReport):
 			filaMax = np.argmax(funcionObjetivo)
 			MAXdata = resultadosAllCasesOpti[filaMax,:]
 
-			resultsToReport['resultadosAllCasesOpti']=resultadosAllCasesOpti
-			resultsToReport['Opti_nEstimators']=MAXdata[1]
-			resultsToReport['Opti_max_feature']=MAXdata[2]
-			resultsToReport['Opti_samples_leaf']=MAXdata[3]
-			resultsToReport['OptimaxPrecision']=MAXdata[4]
+			resultsToReport['resultadosAllCasesOpti_'+str(trainingN)]=resultadosAllCasesOpti
+			resultsToReport['Opti_nEstimators_'+str(trainingN)]=MAXdata[1]
+			resultsToReport['Opti_max_feature_'+str(trainingN)]=MAXdata[2]
+			resultsToReport['Opti_samples_leaf_'+str(trainingN)]=MAXdata[3]
+			resultsToReport['OptimaxPrecision_'+str(trainingN)]=MAXdata[4]
+
+			model_rf = RandomForestClassifier(n_estimators=MAXdata[1], max_features=MAXdata[2], min_samples_leaf=MAXdata[3],random_state=0, n_jobs=2)
+			resultsToReport['OptiModel_'+str(trainingN)]= model_rf
 
 	else:
 			### repeat all, for each training
@@ -310,9 +315,8 @@ def algorithmRandomForest(configuration, X, Y, resultsToReport):
 			resultsToReport['importanciaVars_'+str(trainingN)]=np.around(importanciaVars, decimals=3)
 			resultsToReport['precision_'+str(trainingN)] = precision
 			resultsToReport['Condusionmatrix_'+str(trainingN)] = tabla*100/len(y_pred)
-
-	model = "aun no"
-	resultsToReport['model'] = model
+			resultsToReport['modelRF'+str(trainingN)] = model_rf
+	
 	return resultsToReport
 
 def algorithNeuralNetwork(configuration, dataX, dataY):
