@@ -1,8 +1,8 @@
 import time
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+#import matplotlib.pyplot as plt
+#import seaborn as sns
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
@@ -13,25 +13,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.utils import shuffle
-import seaborn as sns
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
-
-
-from sklearn import datasets
-import tensorflow.keras 
-
-from tensorflow.keras.datasets import mnist 
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout, Flatten
-from tensorflow.keras.layers import Conv2D, MaxPooling2D
-from tensorflow.keras import backend as K 
-import tensorflow as tf
-
-from tensorflow.keras.wrappers.scikit_learn import KerasRegressor
-from sklearn.model_selection import cross_val_score, KFold
-from sklearn.preprocessing import StandardScaler  
-from sklearn.metrics import mean_squared_error
 
 import math
 
