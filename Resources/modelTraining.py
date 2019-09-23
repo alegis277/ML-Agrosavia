@@ -258,6 +258,10 @@ def algorithmRandomForest(configuration, X, Y, resultsToReport):
 			filaMax = np.argmax(funcionObjetivo)
 			MAXdata = resultadosAllCasesOpti[filaMax,:]
 
+			resultsToReport['X_train_'+str(trainingN)]=X_train
+			resultsToReport['X_test_'+str(trainingN)]=X_test
+			resultsToReport['Y_train_'+str(trainingN)]=Y_train
+			resultsToReport['Y_test_'+str(trainingN)]=Y_test
 			resultsToReport['resultadosAllCasesOpti_'+str(trainingN)]=resultadosAllCasesOpti
 			resultsToReport['Opti_nEstimators_'+str(trainingN)]=MAXdata[1]
 			resultsToReport['Opti_max_feature_'+str(trainingN)]=MAXdata[2]

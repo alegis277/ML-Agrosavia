@@ -201,6 +201,7 @@ class MainGUI:
 			self.processButton.config(state=NORMAL)
 			self.imgSearchButton.config(state=NORMAL)
 			print("ERROR: ",str(e))
+			raise e
 
 	def logConsole(self, text, error = False):
 		self.console.insert(END, "\n"+text)
@@ -215,7 +216,6 @@ class MainGUI:
 
 
 def plotAndAnalysis(GUI):
-	resultsToReport = GUI.model
 
 	directory = "Results/"+datetime.now().strftime("%m-%d-%Y, %H %M %S") + " - "+GUI.optionsAlgorithm[GUI.algorithm]
 	os.mkdir(directory)
@@ -225,6 +225,7 @@ def plotAndAnalysis(GUI):
 	reportObj.platform = platform.platform()
 	reportObj.filename = GUI.root.filename
 	reportObj.modulesDetected = len(GUI.dataFrames)
+	reportObj.dataResults = GUI.model
 
 	reportObj.rowsDetected = []
 	for dfDetecter in GUI.dataFrames:
