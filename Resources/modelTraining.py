@@ -212,7 +212,6 @@ def dynamicWindow(pDataFrames, activeModules):
 ### functions pAlgorithm
 ####################################################################################
 def algorithmRandomForest(configuration, X, Y, resultsToReport):
-	resultsToReport['configuration']=configuration
 	# Random Forest:
 	#configuration {'% Train': '70', '# of Trainings': '3', 'Hyperparameter optimization': True}
 	#'Hyperparameter optimization': False, 'N-estimators': '0', 'Max features': '0', 'Min samples leaf': '0'}
@@ -234,27 +233,34 @@ def algorithmRandomForest(configuration, X, Y, resultsToReport):
 			X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=percentageTest, random_state=0)
 			print('There are', X_train.shape[0], 'training data and',  X_test.shape[0], 'testing data.')
 			print(np.vstack((np.unique(Y_train), np.bincount(Y_train))).T)
-
 			### primero optimzar n_Estimators que debe ser un entero entre 0 y 160
-			modelMaximum = ""
-			resultados =[["nArboles", "n_max_features", "n_min_samples_leaf", "precision"]]
+			resultadosAllCasesOpti =[[0,0 ,0 ,0,0 ]]
 			maximunAccuarance = 0
-			x_n_Estimators = range(1,140,5)
-			for nArboles in x_n_Estimators:
+			for nArboles in range(5,70,5):
 				for n_max_features in range(1,6):
-					for n_min_samples_leaf in range(1,10):
+					for n_min_samples_leaf in range(1,5):
 						### training random forest . . . with the input parameters
 						model_rf = RandomForestClassifier(n_estimators=nArboles, max_features=n_max_features, min_samples_leaf=n_min_samples_leaf,random_state=0, n_jobs=2)
 						model_rf.fit(X_train, Y_train.ravel())
 						y_pred = model_rf.predict(X_test)
 						precision=accuracy_score(Y_test, y_pred)
-						resultados = resultados + [nArboles,n_max_features,n_min_samples_leaf,"%.4f" %precision]
-						print(nArboles,n_max_features,n_min_samples_leaf,"%.4f" %precision)
+						funcionObjetivo = 10000*precision-nArboles-n_max_features-n_min_samples_leaf
+						resultadosAllCasesOpti = resultadosAllCasesOpti + [funcionObjetivo, nArboles,n_max_features,n_min_samples_leaf,"%.4f" %precision]
+				print(".")
 
-			print("resultados ")
-			print(resultados )
+			#print("resultadosAllCasesOpti ")
+			#print(resultadosAllCasesOpti )
+			resultadosAllCasesOpti=np.array(resultadosAllCasesOpti)
+			
+			funcionObjetivo= resultadosAllCasesOpti[:,0]
+			filaMax = np.argmax(funcionObjetivo)
+			MAXdata = resultadosAllCasesOpti[filaMax,:]
 
-
+			resultsToReport['resultadosAllCasesOpti']=resultadosAllCasesOpti
+			resultsToReport['Opti_nEstimators']=MAXdata[1]
+			resultsToReport['Opti_max_feature']=MAXdata[2]
+			resultsToReport['Opti_samples_leaf']=MAXdata[3]
+			resultsToReport['OptimaxPrecision']=MAXdata[4]
 
 	else:
 			### repeat all, for each training
@@ -296,14 +302,14 @@ def algorithmRandomForest(configuration, X, Y, resultsToReport):
 			tabla=pd.crosstab(Y_test.ravel(), y_pred, rownames=['Actual LOS'], colnames=['Predicted LOS'])
 			print(tabla*100/len(y_pred))
 
-			resultsToReport['X_train_'+str(nTrainings)]=X_train
-			resultsToReport['X_test_'+str(nTrainings)]=X_test
-			resultsToReport['Y_train_'+str(nTrainings)]=Y_train
-			resultsToReport['Y_test_'+str(nTrainings)]=Y_test
-			resultsToReport['y_pred_'+str(nTrainings)]=y_pred
-			resultsToReport['importanciaVars_'+str(nTrainings)]=np.around(importanciaVars, decimals=3)
-			resultsToReport['precision_'+str(nTrainings)] = precision
-			resultsToReport['Condusionmatrix_'+str(nTrainings)] = tabla*100/len(y_pred)
+			resultsToReport['X_train_'+str(trainingN)]=X_train
+			resultsToReport['X_test_'+str(trainingN)]=X_test
+			resultsToReport['Y_train_'+str(trainingN)]=Y_train
+			resultsToReport['Y_test_'+str(trainingN)]=Y_test
+			resultsToReport['y_pred_'+str(trainingN)]=y_pred
+			resultsToReport['importanciaVars_'+str(trainingN)]=np.around(importanciaVars, decimals=3)
+			resultsToReport['precision_'+str(trainingN)] = precision
+			resultsToReport['Condusionmatrix_'+str(trainingN)] = tabla*100/len(y_pred)
 
 	model = "aun no"
 	resultsToReport['model'] = model
