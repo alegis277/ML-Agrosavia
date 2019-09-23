@@ -92,6 +92,7 @@ def trainModel(pDataFrames, pDataProcessing, pAlgorithm, configuration):
 	print("Model Training finished successful ")
 	print("--------------------------------------------------------")
 	print("resultsToReport", resultsToReport)
+	print("resultsToReport len", len(resultsToReport))
 
 	return []
 
@@ -295,14 +296,14 @@ def algorithmRandomForest(configuration, X, Y, resultsToReport):
 			tabla=pd.crosstab(Y_test.ravel(), y_pred, rownames=['Actual LOS'], colnames=['Predicted LOS'])
 			print(tabla*100/len(y_pred))
 
-			resultsToReport['X_train']=X_train
-			resultsToReport['X_test']=X_test
-			resultsToReport['Y_train']=Y_train
-			resultsToReport['Y_test']=Y_test
-			resultsToReport['y_pred']=y_pred
-			resultsToReport['importanciaVars']=np.around(importanciaVars, decimals=3)
-			resultsToReport['precision'] = precision
-			resultsToReport['Condusionmatrix'] = tabla*100/len(y_pred)
+			resultsToReport['X_train_'+str(nTrainings)]=X_train
+			resultsToReport['X_test_'+str(nTrainings)]=X_test
+			resultsToReport['Y_train_'+str(nTrainings)]=Y_train
+			resultsToReport['Y_test_'+str(nTrainings)]=Y_test
+			resultsToReport['y_pred_'+str(nTrainings)]=y_pred
+			resultsToReport['importanciaVars_'+str(nTrainings)]=np.around(importanciaVars, decimals=3)
+			resultsToReport['precision_'+str(nTrainings)] = precision
+			resultsToReport['Condusionmatrix_'+str(nTrainings)] = tabla*100/len(y_pred)
 
 	model = "aun no"
 	resultsToReport['model'] = model
